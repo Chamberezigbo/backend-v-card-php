@@ -1,4 +1,16 @@
 <?php
+$allowedOrigins = ["http://localhost:3000", "https://thetekpreneurs.com"];
+$origin = $_SERVER['HTTP_ORIGIN'];
+
+if (in_array($origin, $allowedOrigins)) {
+     header("Access-Control-Allow-Origin: $origin");
+     header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+     header("Access-Control-Allow-Headers: Content-Type");
+     header("Access-Control-Allow-Credentials: true");
+     header("Access-Control-Max-Age: 86400"); // Cache preflight for 1 day
+     http_response_code(200);
+}
+
 // include my database
 require_once "../config/config.php";
 require_once "../config/pdo.php";
@@ -7,11 +19,6 @@ $db = new DatabaseClass();
 require_once '../vendor/autoload.php'; // Include the JWT library
 use Firebase\JWT\JWT;
 
-
-// Handle CORS (Cross-Origin Resource Sharing)
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
-header('Access-Control-Allow-Headers: Content-Type');
 
 // check if its post request//
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -33,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           $full_name = htmlspecialchars(strip_tags($data->fullName));
           $email = filter_var($data->email, FILTER_VALIDATE_EMAIL) ? $data->email : null;
           $phone = preg_match('/^[0-9]{10}$/', $data->phone) ? $data->phone : null;
-          $date_of_birth = strtotime($data->date_of_birth) ? date('Y-m-d', strtotime($data->date_of_birth)) : null;
+          $date_of_birth = strtotime($data->date_of_birth) ? date('m-d-Y', strtotime($data->date_of_birth)) : null;
 
           if (!$email || !$phone || !$date_of_birth || !$full_name) {
                http_response_code(400); // Bad request

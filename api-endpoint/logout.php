@@ -1,4 +1,16 @@
 <?php
+$allowedOrigins = ["http://localhost:3000", "https://thetekpreneurs.com"];
+$origin = $_SERVER['HTTP_ORIGIN'];
+
+if (in_array($origin, $allowedOrigins)) {
+     header("Access-Control-Allow-Origin: $origin");
+     header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+     header("Access-Control-Allow-Headers: Content-Type");
+     header("Access-Control-Allow-Credentials: true");
+     header("Access-Control-Max-Age: 86400"); // Cache preflight for 1 day
+     http_response_code(200);
+}
+
 // Include your configuration and database connection here
 require_once "../config/config.php";
 require_once "../config/pdo.php";
@@ -7,11 +19,6 @@ $db = new DatabaseClass();
 require_once '../vendor/autoload.php'; // Include the JWT library
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-
-// Handle CORS (Cross-Origin Resource Sharing)
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
-header('Access-Control-Allow-Headers: Content-Type');
 
 // Check if it's a POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
