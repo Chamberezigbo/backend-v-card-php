@@ -4,11 +4,7 @@ require_once './confiq/config.php';
 
 require_once './confiq/pdo.php';
 
-
-// Handle CORS (Cross-Origin Resource Sharing)
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
-header('Access-Control-Allow-Headers: Content-Type');
+cors();
 
 // Get the HTTP method and requested path
 $method = $_SERVER['REQUEST_METHOD'];
