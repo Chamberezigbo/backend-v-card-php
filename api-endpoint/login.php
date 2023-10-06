@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
           $tokenPayload['aud'] = $email;
           $tokenPayload['data'] = array(
-               'user_id' => $user['user']['user_id'],
+               'user_id' => $user['user_id'],
                'email' => $email,
           );
           $token = JWT::encode($tokenPayload, $key, 'HS256');
