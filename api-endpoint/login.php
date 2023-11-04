@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           http_response_code(401); // Unauthorized
           echo json_encode(array('message' => $errorMessage));
           exit;
-     } else {
+     } elseif (isset($user['error'])) {
           $errorMessage = $user['error'];
 
           $tokenPayload['aud'] = $email;
@@ -48,19 +48,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           http_response_code(201); // Unauthorized
           echo json_encode(array('message' => $errorMessage, 'token' => $token));
           exit;
+     } else {
+
+          $tokenPayload['aud'] = $email;
+          $tokenPayload['data'] = array(
+               'user_id' => $user['user_id'],
+               'email' => $email,
+          );
+
+          $token = JWT::encode($tokenPayload, $key, 'HS256');
+          // Respond with the JWT token
+          http_response_code(200); // OK
+          echo json_encode(array('message' => 'Login successful', 'token' => $token));
      }
 
-
-     $tokenPayload['aud'] = $email;
-     $tokenPayload['data'] = array(
-          'user_id' => $user['user']['user_id'],
-          'email' => $email,
-     );
-
-     $token = JWT::encode($tokenPayload, $key, 'HS256');
-     // Respond with the JWT token
-     http_response_code(200); // OK
-     echo json_encode(array('message' => 'Login successful', 'token' => $token));
 } else {
      http_response_code(405); // Method Not Allowed
      echo json_encode(array('message' => 'Invalid request method'));
