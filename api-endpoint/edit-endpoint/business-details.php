@@ -27,13 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Verify the token
         $decoded = JWT::decode($token, new Key($key, 'HS256'));
 
-        $socialLinkExist = validateDetails($decoded->data->user_id, 'business_details');
-        if (!$socialLinkExist) {
-            http_response_code(400); // Bad Request
-            echo json_encode(array('message' => 'Business does not exist'));
-            exit;
-        }
-
         // Get data from the request body (assuming JSON Data)
         $data = json_decode(file_get_contents("php://input"));
 
@@ -51,15 +44,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Check if an image file was uploaded
         if (!isset($_FILES['logo']) || $_FILES['logo']['error'] !== UPLOAD_ERR_OK) {
-              // Then, in your main code, you can call the method like this
+              // No new logo uploaded, keep the existing logo path
               $existingLogoPath = $db->getExistingLogoPath($decoded->data->user_id);
-              $logoPath = existingLogoPath; // Assuming you have a field in your database for the logo path
+              $logoPath = $existingLogoPath; // Assuming you have a field in your database for the logo path
         } else {
             // Handle logo upload
-            // ... (your existing code for moving uploaded file)
 
-            // Set the logo path for the database update
-            $logoPath = $targetPath;
+            // Define the upload directory (where you want to save the images)
+            $uploadDirectory = '../../uploads/'; // You may need to create this directory
+
+            // Get the existing logo path
+            $existingLogoPath = $db->getExistingLogoPath($decoded->data->user_id);
+
+            // Delete the previous file if it exists
+            if ($existingLogoPath) {
+                $existingLogoFullPath = realpath($existingLogoPath);
+                if ($existingLogoFullPath && file_exists($existingLogoFullPath)) {
+                    unlink($existingLogoFullPath);
+                }
+            }
+
+            // Generate a unique filename for the uploaded image
+            $originalFilename = basename($_FILES['logo']['name']);
+            $extension = pathinfo($originalFilename, PATHINFO_EXTENSION);
+            $uniqueFilename = uniqid() . '.' . $extension;
+            $targetPath = $uploadDirectory . $uniqueFilename;
+
+            // Move the uploaded file to the target path
+            if (move_uploaded_file($_FILES['logo']['tmp_name'], $targetPath)) {
+                // File was successfully moved
+                // Now, $targetPath contains the path to the saved image
+                $logoPath = $targetPath;
+            } else {
+                // File upload failed
+                http_response_code(500); // Internal Server Error
+                echo json_encode(array('message' => 'Failed to upload the image.'));
+                exit;
+            }
         }
 
         // Update the existing record with new data

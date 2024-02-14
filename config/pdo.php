@@ -2,9 +2,9 @@
 
 //SOME CONSTANTS HERE
 DEFINE('DB_HOST', 'localhost');
-DEFINE('DB_USER', 'root');
-DEFINE('DB_PASS', '');
-DEFINE('DB_NAME', 'virtualcards');
+DEFINE('DB_USER', 'thetekpr_testing');
+DEFINE('DB_PASS', 'kJKJ6Z6KfArhFz@');
+DEFINE('DB_NAME', 'thetekpr_thetekpr');
 
 class DatabaseClass
 {
