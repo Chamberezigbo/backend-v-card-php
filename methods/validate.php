@@ -1,5 +1,6 @@
 <?php
-require_once "../config/pdo.php";
+// require_once "../config/pdo.php";
+require_once __DIR__ . '/../config/pdo.php';
 
 function validateUser($email, $password)
 {

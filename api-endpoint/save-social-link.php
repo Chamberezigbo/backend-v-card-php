@@ -46,9 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           // Check if JSON data is provided and not empty
           if (!empty($data)) {
                // Retrieve and sanitize input data
-               $facebook = isset($data->facebook) ? htmlspecialchars(strip_tags($data->facebook)) : "";
-               $linkedIn = isset($data->linkedIn) ? htmlspecialchars(strip_tags($data->linkedIn)) : "";
-               $instagram = isset($data->instagram) ? htmlspecialchars(strip_tags($data->instagram)) : "";
+               $facebook = isset($data->facebook) ? htmlspecialchars(strip_tags($data->facebook)) : null;
+               $linkedIn = isset($data->linkedIn) ? htmlspecialchars(strip_tags($data->linkedIn)) : null;
+               $instagram = isset($data->instagram) ? htmlspecialchars(strip_tags($data->instagram)) : null;
           }
 
           // Validate input data (you can add more validation as needed)

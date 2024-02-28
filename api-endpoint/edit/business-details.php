@@ -6,6 +6,9 @@ require_once "../../methods/validate.php";
 require_once "../../methods/getExistingLogoPath.php";
 cors();
 $db = new DatabaseClass();
+// Instantiate DataClass
+$dataClass = new DataClass($db);
+
 
 require_once '../../vendor/autoload.php'; // Include the JWT library
 use Firebase\JWT\JWT;
@@ -30,10 +33,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Get data from the request body (assuming JSON Data)
         $data = json_decode(file_get_contents("php://input"));
 
-        // Retrieve and sanitize input data
-        $name = htmlspecialchars(strip_tags($data->name));
-        $description = htmlspecialchars(strip_tags($data->description));
-        $location = htmlspecialchars(strip_tags($data->location));
+        // Get data from the form-data
+        $name = isset($_POST['name']) ? htmlspecialchars(strip_tags($_POST['name'])) : "";
+        $description = isset($_POST['description']) ? htmlspecialchars(strip_tags($_POST['description'])) : "";
+        $location = isset($_POST['location']) ? htmlspecialchars(strip_tags($_POST['location'])) : "";
+
+
 
         // Validate input data
         if (empty($name) || empty($description) || empty($location)) {
@@ -45,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Check if an image file was uploaded
         if (!isset($_FILES['logo']) || $_FILES['logo']['error'] !== UPLOAD_ERR_OK) {
               // No new logo uploaded, keep the existing logo path
-              $existingLogoPath = $db->getExistingLogoPath($decoded->data->user_id);
+              $existingLogoPath = $dataClass->getExistingLogoPath($decoded->data->user_id);
               $logoPath = $existingLogoPath; // Assuming you have a field in your database for the logo path
         } else {
             // Handle logo upload
@@ -54,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $uploadDirectory = '../../uploads/'; // You may need to create this directory
 
             // Get the existing logo path
-            $existingLogoPath = $db->getExistingLogoPath($decoded->data->user_id);
+            $existingLogoPath = $dataClass->getExistingLogoPath($decoded->data->user_id);
 
             // Delete the previous file if it exists
             if ($existingLogoPath) {

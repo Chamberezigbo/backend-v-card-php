@@ -1,13 +1,13 @@
 <?php
 
 // include my database
-require_once "../methods/validate.php";
-require_once "../config/config.php";
-require_once "../config/pdo.php";
+require_once "../../methods/validate.php";
+require_once "../../config/config.php";
+require_once "../../config/pdo.php";
 $db = new DatabaseClass();
 cors();
 
-require_once '../vendor/autoload.php'; // Include the JWT library
+require_once '../../vendor/autoload.php'; // Include the JWT library
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
@@ -26,13 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         // Verify the token
         $decoded = JWT::decode($token, new Key($key, 'HS256'));
-
-        $socialLinkExist = validateDetails($decoded->data->user_id, 'social_links');
-        if (!$socialLinkExist) {
-            http_response_code(400); // Bad Request
-            echo json_encode(array('message' => 'Social links do not exist for the user.'));
-            exit;
-        }
 
         // Initialize variables for social media links
         $facebook = null;
